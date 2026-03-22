@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: visits-counter
-        image: charanreddy12/visits-counter:latest
+        image: charanreddy12/visits-counter:2
         resources:
           requests:
             memory: "64Mi"
