@@ -2,7 +2,17 @@ name: Build and Push Docker Image
 
 on: 
 #   push:
-    workflow_dispatch
+    workflow_dispatch:
+      inputs:
+        deployment_type:
+          description: 'Select deployment strategy'
+          required: true
+          default: 'normal'
+          type: choice
+          options:
+            - bluegreen
+            - canary
+            - normal
 jobs:
   Build_and_push_image:
     runs-on: ubuntu-latest
@@ -35,12 +45,22 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
     
       - name: Replace_Image_Tag
+        if: github.event_name == 'workflow_dispatch'
         run: |
           #!/bash/bin
-          git config user.name "github-actions"
-          git config user.email "github-action@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-action[bot]@github.com"
           
-          sed -i "s|${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:.*|${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}|g" ./argo_rollouts/bluegreen/blue_green.yaml
-          git add ./argo_rollouts/bluegreen/blue_green.yaml
-          git commit -m "Updating the image tag to ${{ env.IMAGE_TAG }} in blue_green.yaml file"
+          # Determine the file path based on deployment type
+          if [ "${{ github.event.inputs.deployment_type }}" == "bluegreen" ]; then
+            FILE_PATH="./argo_rollouts/bluegreen/blue_green.yaml"
+          elif [ "${{ github.event.inputs.deployment_type }}" == "canary" ]; then
+            FILE_PATH="./argo_rollouts/canary/canary.yaml"
+          elif [ "${{ github.event.inputs.deployment_type }}" == "normal" ]; then
+            FILE_PATH="./kubernetes/webapp.yaml"
+          fi
+          
+          sed -i "s|${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:.*|${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}|g" "$FILE_PATH"
+          git add "$FILE_PATH"
+          git commit -m "Updating the image tag to ${{ env.IMAGE_TAG }} in ${{ github.event.inputs.deployment_type }} deployment"
           git push origin main

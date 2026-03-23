@@ -1,0 +1,60 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: visits-counter-canary
+spec:
+  replicas: 4
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: canary
+  template:
+    metadata:
+      labels:
+        app: canary
+    spec:
+      containers:
+        - name: canary
+          image: charanreddy12/visits-counter:6
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 3000
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "150m"
+          env:
+            - name: REDIS_URL
+              value: redis://redis:6379
+  strategy:
+    canary:
+      maxSurge: '20%'
+      maxUnavailable: 0
+      steps:
+        - setWeight: 25
+        - pause:
+            duration: 15s
+        - setWeight: 50
+        - pause:
+            duration: 15s
+        - setWeight: 75
+        - pause:
+            duration: 15s
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: visits-counter-canary-svc
+spec:
+  type: NodePort
+  selector:
+    app: canary
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 31100
