@@ -6,7 +6,9 @@ const client = redis.createClient({
   url: process.env.REDIS_URL || "redis://redis-server:6379",
 });
 
-client.set('visits', 0);
+client.connect().then(() => {
+  client.set('visits', 0);
+}).catch(console.error);
 
 
 
@@ -19,14 +21,15 @@ app.get('/', (req, res) => {
 });
 
 // API endpoint for visits count
-app.get('/visits', (req, res) => {
-  client.get('visits', (err, visits) => {
-    if (err) {
-      return res.status(500).json({ error: 'Redis error' });
-    }
-    res.json({ visits: visits });
-    client.set('visits', parseInt(visits) + 1);
-  });
+app.get('/visits', async (req, res) => {
+  try {
+    const visits = await client.get('visits');
+    res.json({ visits: visits || 0 });
+    await client.set('visits', parseInt(visits || 0) + 1);
+  } catch (err) {
+    console.error('Redis error:', err);
+    return res.status(500).json({ error: 'Redis error' });
+  }
 });
 
 app.listen(3000, () => {

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: redis
   annotations:
-    argocd.argoproj.io/sync-waves: "-1"
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   selector:
     matchLabels:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: redis-container
-        image: redis:8.0-alpine
+        image: redis:7-alpine
         resources:
           requests:
             memory: "64Mi"
