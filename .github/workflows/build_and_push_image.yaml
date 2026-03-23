@@ -41,6 +41,6 @@ jobs:
           git config user.email "github-action@github.com"
           
           sed -i "s|${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:.*|${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}|g" ./argo_rollouts/bluegreen/blue_green.yaml
-          git add ./kubernetes/webapp.yaml
-          git commit -m "Updating the image tag to ${{ env.IMAGE_TAG }} in webapp.yaml file"
+          git add ./argo_rollouts/bluegreen/blue_green.yaml
+          git commit -m "Updating the image tag to ${{ env.IMAGE_TAG }} in blue_green.yaml file"
           git push origin main
