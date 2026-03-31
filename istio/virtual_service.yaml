@@ -11,5 +11,13 @@ spec:
     - route:
         - destination:
             host: visits-counter-service
+            subset: v1
             port:
               number: 80
+          weight: 50
+        - destination:
+            host: visits-counter-service
+            subset: v2
+            port:
+              number: 80
+          weight: 50

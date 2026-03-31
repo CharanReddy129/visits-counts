@@ -1,5 +1,6 @@
 body {
-  background: #f7fafc;
+  --app-bg: #f7fafc;
+  background: var(--app-bg);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
@@ -9,7 +10,7 @@ body {
   margin: 0;
 }
 .container {
-  background: #fff;
+  background: #ffffff;
   padding: 2rem 3rem;
   border-radius: 12px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
@@ -18,6 +19,16 @@ body {
 h1 {
   color: #2d3748;
   margin-bottom: 1rem;
+}
+.version {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.9rem;
+  color: #1a365d;
+  background: #bee3f8;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 .visits {
   font-size: 2.5rem;

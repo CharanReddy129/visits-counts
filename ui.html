@@ -9,10 +9,18 @@
 <body>
   <div class="container">
     <h1>Welcome to the Visits Counter!</h1>
+    <div class="version" id="version">Version: v1</div>
     <div class="visits" id="visits">0</div>
     <div class="desc">Number of visits to this page</div>
   </div>
   <script>
+    fetch('/config')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('version').textContent = `Version: ${data.version}`;
+        document.body.style.setProperty('--app-bg', data.background);
+      });
+
     fetch('/visits')
       .then(res => res.json())
       .then(data => {

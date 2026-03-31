@@ -2,6 +2,8 @@ const express = require('express');
 const redis = require('redis');
 
 const app = express();
+const appVersion = process.env.APP_VERSION || 'v1';
+const appBackground = process.env.APP_BACKGROUND || '#f7fafc';
 const client = redis.createClient({
   url: process.env.REDIS_URL || "redis://redis-server:6379",
 });
@@ -18,6 +20,13 @@ app.use(express.static(__dirname));
 // Serve the improved UI
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/ui.html');
+});
+
+app.get('/config', (req, res) => {
+  res.json({
+    version: appVersion,
+    background: appBackground
+  });
 });
 
 // API endpoint for visits count

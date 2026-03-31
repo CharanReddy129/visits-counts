@@ -1,21 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: visits-counter
+  name: visits-counter-v1
   annotations:
     argocd.argoproj.io/sync-waves: "1"
 spec:
   selector:
     matchLabels:
       app: webapp
+      version: v1
   template:
     metadata:
       labels:
         app: webapp
+        version: v1
     spec:
       containers:
       - name: visits-counter
-        image: charanreddy12/visits-counter:7
+        image: charanreddy12/visits-counter:v1
         resources:
           requests:
             memory: "64Mi"
@@ -26,6 +28,48 @@ spec:
         env:
           - name: REDIS_URL
             value: redis://redis:6379
+          - name: APP_VERSION
+            value: v1
+          - name: APP_BACKGROUND
+            value: "#f7fafc"
+        ports:
+        - containerPort: 3000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: visits-counter-v2
+  annotations:
+    argocd.argoproj.io/sync-waves: "1"
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: webapp
+        version: v2
+    spec:
+      containers:
+      - name: visits-counter
+        image: charanreddy12/visits-counter:v1
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "150m"
+        env:
+          - name: REDIS_URL
+            value: redis://redis:6379
+          - name: APP_VERSION
+            value: v2
+          - name: APP_BACKGROUND
+            value: "#fff5f5"
         ports:
         - containerPort: 3000
 
